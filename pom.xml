@@ -146,7 +146,15 @@
             <version>3.2.5.v20190101-RELEASE</version>
         </dependency>
 
+        <!-- lombok依赖 主要用作日志功能-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
     </dependencies>
+
+
 
     <build>
         <plugins>

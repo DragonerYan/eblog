@@ -10,6 +10,7 @@ import com.example.search.mq.PostMqIndexMessage;
 import com.example.util.ValidationUtil;
 import com.example.vo.CommentVo;
 import com.example.vo.PostVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Date;
 
 @Controller
+@Slf4j
 public class PostController extends BaseController{
 
     @GetMapping("/category/{id:\\d*}")
@@ -274,6 +276,14 @@ public class PostController extends BaseController{
         //评论数量减一
         postService.incrCommentCountAndUnionForWeekRank(comment.getPostId(), false);
 
+        return Result.success(null);
+    }
+
+    @ResponseBody
+    @Transactional
+    @PostMapping("/api/jieda-zan/")
+    public Result like(Long id) {
+        log.debug("测试日志及点赞接口");
         return Result.success(null);
     }
 
