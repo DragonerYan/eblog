@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>错误提示</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="keywords" content="欢迎关注公众号：MarkerHub">
-    <meta name="description" content="更多开源项目可以关注公众号：MarkerHub">
+<#--    <meta name="keywords" content="欢迎关注公众号：MarkerHub">-->
+<#--    <meta name="description" content="更多开源项目可以关注公众号：MarkerHub">-->
     <link rel="stylesheet" href="/res/layui/css/layui.css">
     <link rel="stylesheet" href="/res/css/global.css">
 </head>
@@ -20,9 +20,9 @@
       <li class="layui-nav-item layui-this">
         <a href="/"><i class="iconfont icon-jiaoliu"></i>主页</a>
       </li>
-      <li class="layui-nav-item">
-        <a target="_blank" href="https://mp.weixin.qq.com/s/lR5LC5GnD2Gs59ecV5R0XA"><i class=""></i>最新企业面试题</a>
-      </li>
+<#--      <li class="layui-nav-item">-->
+<#--        <a target="_blank" href="https://mp.weixin.qq.com/s/lR5LC5GnD2Gs59ecV5R0XA"><i class=""></i>最新企业面试题</a>-->
+<#--      </li>-->
     </ul>
 
     <ul class="layui-nav fly-nav-user">

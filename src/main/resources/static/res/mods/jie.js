@@ -144,7 +144,7 @@ layui.define('fly', function(exports){
         ,id: li.data('id')
       }, function(res){
         if(res.status === 0){
-          var zans = othis.find('em').html()|0;
+          var zans = othis.find('em').html();
           othis[ok ? 'removeClass' : 'addClass']('zanok');
           othis.find('em').html(ok ? (--zans) : (++zans));
         } else {

@@ -7,10 +7,12 @@ import com.example.common.lang.Result;
 import com.example.config.RabbitConfig;
 import com.example.entity.*;
 import com.example.search.mq.PostMqIndexMessage;
+import com.example.service.ZanService;
 import com.example.util.ValidationUtil;
 import com.example.vo.CommentVo;
 import com.example.vo.PostVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -22,10 +24,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @Slf4j
 public class PostController extends BaseController{
+
+    @Autowired
+    ZanService zanService;
 
     @GetMapping("/category/{id:\\d*}")
     public String category(@PathVariable(name = "id") Long id) {
@@ -283,8 +289,16 @@ public class PostController extends BaseController{
     @Transactional
     @PostMapping("/api/jieda-zan/")
     public Result like(Long id) {
-        log.debug("测试日志及点赞接口");
-        return Result.success(null);
+        //查询是否存在点赞
+        Zan zan=zanService.getById(id);
+        //无的话新增一条记录，将评论表中的点赞数+1
+        if(zan==null){
+            zanService.save(new Zan());
+            return Result.success("add");
+        }
+        //有的话就删除记录，并将评论表中的点赞数-1
+        zanService.removeById(zan.getId());
+        return Result.success("delete");
     }
 
 }
