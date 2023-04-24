@@ -143,10 +143,13 @@ layui.define('fly', function(exports){
         ok: ok
         ,id: li.data('id')
       }, function(res){
+        console.log();
         if(res.status === 0){
           var zans = othis.find('em').html();
           othis[ok ? 'removeClass' : 'addClass']('zanok');
-          othis.find('em').html(ok ? (--zans) : (++zans));
+          console.log(res)
+          zans=res.data.zan;
+          othis.find('em').html(ok ? (zans) : (zans));
         } else {
           layer.msg(res.msg);
         }

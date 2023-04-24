@@ -1,18 +1,18 @@
 package com.example.controller;
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.lang.Result;
 import com.example.config.RabbitConfig;
 import com.example.entity.*;
 import com.example.search.mq.PostMqIndexMessage;
-import com.example.service.ZanService;
 import com.example.util.ValidationUtil;
 import com.example.vo.CommentVo;
 import com.example.vo.PostVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -22,16 +22,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.tio.utils.json.Json;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
 @Slf4j
 public class PostController extends BaseController{
 
-    @Autowired
-    ZanService zanService;
 
     @GetMapping("/category/{id:\\d*}")
     public String category(@PathVariable(name = "id") Long id) {
@@ -289,16 +289,45 @@ public class PostController extends BaseController{
     @Transactional
     @PostMapping("/api/jieda-zan/")
     public Result like(Long id) {
+
         //查询是否存在点赞
-        Zan zan=zanService.getById(id);
+        Long userId=getProfileId();
+        LambdaQueryWrapper<Zan> qw=new LambdaQueryWrapper<>();
+        qw.eq(Zan::getUserId,userId).eq(Zan::getCommentId,id);
+        List<Zan> zanList=zanService.getBaseMapper().selectList(qw);
+
+        Comment comment=commentService.getById(id);
+
+
         //无的话新增一条记录，将评论表中的点赞数+1
-        if(zan==null){
-            zanService.save(new Zan());
-            return Result.success("add");
+        int voteUp= 0;
+        HashMap<String,Object> res=new HashMap<>();
+        if(zanList.size()==0){
+            //插入点赞表
+            Zan newZan=new Zan();
+            newZan.setPostId(comment.getPostId());
+            newZan.setCommentId(id);
+            newZan.setUserId(userId);
+            newZan.setCreated(new Date());
+            zanService.save(newZan);
+
+
+            voteUp=comment.getVoteUp()+1;
+            res.put("status","add");
+            res.put("zan",comment.getVoteUp()+1);
+        }else{
+            //删除点赞记录
+            zanService.removeById(zanList.get(0).getId());
+
+            voteUp=comment.getVoteUp()-1;
+            res.put("status","del");
+            res.put("zan",comment.getVoteUp()-1);
         }
-        //有的话就删除记录，并将评论表中的点赞数-1
-        zanService.removeById(zan.getId());
-        return Result.success("delete");
+
+        //修改评论表
+        commentService.update(new Comment().setVoteUp(voteUp),new UpdateWrapper<Comment>().eq("id",comment.getId()));
+
+        return Result.success(res);
     }
 
 }
